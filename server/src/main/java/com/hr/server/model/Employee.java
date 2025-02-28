@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -71,7 +72,7 @@ public class Employee {
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(nullable = false)
-    private Date hireDate;
+    private LocalDate hireDate;
 
     @Column(nullable = true)
     private double salary;
@@ -86,7 +87,7 @@ public class Employee {
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(nullable = false)
-    private Date birthdate;
+    private LocalDate birthdate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

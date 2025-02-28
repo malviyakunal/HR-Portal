@@ -203,19 +203,20 @@ const AddEmployee = () => {
     address: "",
     birthdate: "",
     status: "ACTIVE",
-    profilePhoto: null,
   });
 
+  const [profilePhoto, setProfilePhoto] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [error, setError] = useState(null);
 
+  // 🔹 Fetch departments from the backend
   useEffect(() => {
-    // Fetch departments
     const fetchDepartments = async () => {
       try {
-        const deptRes = await fetch("http://localhost:8010/api/departments");
-        if (!deptRes.ok) throw new Error("Failed to fetch departments");
-        setDepartments(await deptRes.json());
+        const response = await fetch("http://localhost:8010/api/departments");
+        if (!response.ok) throw new Error("Failed to fetch departments");
+        const data = await response.json();
+        setDepartments(data);
       } catch (err) {
         console.error(err);
         setError("Failed to load departments");
@@ -224,26 +225,36 @@ const AddEmployee = () => {
     fetchDepartments();
   }, []);
 
+  // 🔹 Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  // 🔹 Handle file upload
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData((prevData) => ({ ...prevData, profilePhoto: file }));
+      setProfilePhoto(file);
       setPreviewImage(URL.createObjectURL(file));
     }
   };
 
+  // 🔹 Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const formDataToSend = new FormData();
+      
+      // Append text fields
       Object.entries(formData).forEach(([key, value]) => {
         formDataToSend.append(key, value);
       });
+
+      // Append profile photo if available
+      if (profilePhoto) {
+        formDataToSend.append("profilePhoto", profilePhoto);
+      }
 
       const response = await fetch("http://localhost:8010/api/employees", {
         method: "POST",
@@ -264,6 +275,8 @@ const AddEmployee = () => {
       <h3 className="mb-3">Add Employee</h3>
       {error && <p className="text-danger">{error}</p>}
       <form onSubmit={handleSubmit} className="row g-3">
+        
+        {/* Profile Photo Preview */}
         <div className="col-12 text-center">
           {previewImage ? (
             <img src={previewImage} alt="Profile" className="rounded-circle" width="120" height="120" />
@@ -274,30 +287,37 @@ const AddEmployee = () => {
           )}
         </div>
 
-        {[{ label: "First Name", name: "firstName", type: "text" },
+        {/* Text Inputs */}
+        {[
+          { label: "First Name", name: "firstName", type: "text" },
           { label: "Last Name", name: "lastName", type: "text" },
           { label: "Email", name: "email", type: "email" },
           { label: "Phone Number", name: "phoneNumber", type: "text" },
           { label: "Role", name: "roleName", type: "text" },
           { label: "Birthdate", name: "birthdate", type: "date" },
           { label: "Hire Date", name: "hireDate", type: "date" },
-          { label: "Salary", name: "salary", type: "number" }].map(({ label, name, type }) => (
+          { label: "Salary", name: "salary", type: "number" },
+        ].map(({ label, name, type }) => (
           <div className="col-md-6" key={name}>
             <label className="form-label">{label}</label>
             <input type={type} className="form-control" name={name} value={formData[name]} onChange={handleChange} required />
           </div>
         ))}
 
+        {/* Department Dropdown */}
         <div className="col-md-6">
           <label className="form-label">Department</label>
           <select className="form-select" name="departmentId" value={formData.departmentId} onChange={handleChange} required>
             <option value="">Select Department</option>
             {departments.map((dept) => (
-              <option key={dept.departmentId} value={dept.departmentId}>{dept.dName}</option>
+              <option key={dept.departmentId} value={dept.departmentId}>
+                {dept.dName || dept.dname}
+              </option>
             ))}
           </select>
         </div>
 
+        {/* Gender Dropdown */}
         <div className="col-md-6">
           <label className="form-label">Gender</label>
           <select className="form-select" name="gender" value={formData.gender} onChange={handleChange}>
@@ -307,6 +327,7 @@ const AddEmployee = () => {
           </select>
         </div>
 
+        {/* Status Dropdown */}
         <div className="col-md-6">
           <label className="form-label">Status</label>
           <select className="form-select" name="status" value={formData.status} onChange={handleChange}>
@@ -315,16 +336,19 @@ const AddEmployee = () => {
           </select>
         </div>
 
+        {/* Address Field */}
         <div className="col-12">
           <label className="form-label">Address</label>
           <textarea className="form-control" name="address" value={formData.address} onChange={handleChange} required />
         </div>
 
+        {/* Profile Photo Upload */}
         <div className="col-12">
           <label className="form-label">Profile Photo</label>
           <input type="file" className="form-control" accept="image/*" onChange={handleFileChange} />
         </div>
 
+        {/* Submit and Back Buttons */}
         <div className="col-12 text-center">
           <a href="/employees" className="btn btn-secondary me-2">Back to Employee List</a>
           <button type="submit" className="btn btn-success">Add Employee</button>

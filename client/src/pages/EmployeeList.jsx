@@ -77,13 +77,14 @@ const EmployeeList = () => {
           <div className="col-md-4 mb-4" key={employee.employeeId}>
             <div className="card p-3 shadow-lg border-0 rounded-3">
               <div className="d-flex align-items-center">
-                <img
-                  src={employee.profilePhoto  || "https://i.pinimg.com/550x/18/b9/ff/18b9ffb2a8a791d50213a9d595c4dd52.jpg"}
-                  alt="profile"
-                  className="rounded-circle me-3"
-                  width="60"
-                  height="60"
-                />
+              <img
+  src={employee.profilePhoto ? employee.profilePhoto : "https://i.pinimg.com/550x/18/b9/ff/18b9ffb2a8a791d50213a9d595c4dd52.jpg"}
+  alt="profile"
+  className="rounded-circle me-3"
+  width="60"
+  height="60"
+/>
+
                 <div>
                   <h5 className="mb-0 fw-bold">{employee.firstName} {employee.lastName}</h5>
                   <p className="text-muted mb-1">{employee.departmentName}</p>

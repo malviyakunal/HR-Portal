@@ -1,5 +1,6 @@
 package com.hr.server.controller;
 
+import com.hr.server.dto.EmployeeDTO;
 import com.hr.server.model.Employee;
 import com.hr.server.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,11 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     // Create Employee
-    @PostMapping
-    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
-        Employee savedEmployee = employeeService.createEmployee(employee);
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<Employee> createEmployee(
+            @ModelAttribute EmployeeDTO employeeRequest) throws IOException {
+
+        Employee savedEmployee = employeeService.createEmployee(employeeRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEmployee);
     }
 
@@ -51,19 +54,19 @@ public class EmployeeController {
     }
 
     // Update Employee
-    @PutMapping("/update/{employeeId}")
+   
+    @PutMapping(value = "/update/{employeeId}", consumes = "multipart/form-data")
     public ResponseEntity<Employee> updateEmployee(
             @PathVariable long employeeId,
-            @RequestBody Employee employeeDetails, // JSON data
-            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto // File upload
+            @ModelAttribute EmployeeDTO employeeDetails, // Handle both JSON and file
+            @RequestParam(value = "profilePhoto", required = false) MultipartFile profilePhoto // File upload
     ) throws IllegalStateException, IOException {
-        
+
         Employee updatedEmployee = employeeService.updateEmployee(employeeId, employeeDetails, profilePhoto);
         return updatedEmployee != null
                 ? ResponseEntity.ok(updatedEmployee)
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-
 
     // Delete Employee
     @DeleteMapping("/{employeeId}")
@@ -75,13 +78,4 @@ public class EmployeeController {
         employeeService.deleteEmployee(employeeId);
         return ResponseEntity.ok("✅ Employee deleted successfully");
     }
-
-//@PutMapping("/updateProfilePhoto/{employeeId}")
-//public ResponseEntity<String> updateProfilePhoto(
-//        @PathVariable long employeeId,
-//        @RequestParam("profilePhoto") MultipartFile profilePhoto) throws IOException {
-//    
-//    employeeService.updateProfilePhoto(employeeId, profilePhoto);
-//    return ResponseEntity.ok("✅ Profile photo updated successfully!");
-//}
 }
