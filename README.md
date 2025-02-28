@@ -30,7 +30,7 @@ A web-based **HR Management System** that allows HR personnel to manage employee
 
 ### **1️⃣ Clone the Repository**
 ```sh
-git clone https://github.com/yourusername/HR-Portal.git  
+git clone https://github.com/malviyakunal/HR-Portal.git
 cd HR-Portal
 
 2️⃣ Backend (Spring Boot) Setup
